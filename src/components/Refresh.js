@@ -1,33 +1,43 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+import React, { useEffect,useState } from "react";
+import axios from 'axios';
 
 const OTP = (props) => {
-  const history = useHistory();
   const { detailsState, setDetailsState } = props;
   const getOTP = async (e) => {
-    e.preventDefault();
-    console.log("get-otp", detailsState);
-    history.push("/verify");
+    const optionsLogin = {
+      "content-type": "application/x-www-form-urlencoded",
+    };
+    console.log(detailsState);
+    const jsonBody = {
+      client_id: "eK0mkkqu8Q03e6uTbP1uuPM8eszgrqf2",
+      client_secret: "niZTToFk42DoIOUvShCWYH4S-gb2nND0JG9oHxAZj-en2b3hqCzIZgmvYKRYXoji",
+      grant_type: "refresh_token",
+      refresh_token: detailsState.refreshToken,
+      subrefid: detailsState.param1
+    };
+    const data = new URLSearchParams(jsonBody).toString();
+    try {
+      const token = await axios.post("oauth/token", data,
+        {
+          headers: optionsLogin,
+        }
+      );
+      console.log(detailsState);
+      setDetailsState({...detailsState, accessToken:token.data.access_token,idToken:token.data.id_token,refreshToken:token.data.refresh_token})
+      console.log(token);
+    } catch (err) {
+      console.log(err)
+    }
+    return
   };
+  useEffect(()=>{const parse = getOTP();},[])
+  
   return (
     <div>
-      <form style={{ display: "flex", flexDirection: "column" }}>
-        EMAIL:
-        <input
-          type="text"
-          value={props.email}
-          onChange={(e) => {
-            setDetailsState({ ...detailsState, email: e.target.value });
-          }}
-        ></input>
-        <button
-          style={{ with: "50%" }}
-          type="button"
-          onClick={(e) => getOTP(e)}
-        >
-          <p onClick={(e) => getOTP(e)}>start-otp-flow</p>
-        </button>
-      </form>
+      New tokens <br/>
+      <b>Access token : </b> {detailsState.accessToken}
+      <br/>
+      <b>ID token : </b> {detailsState.idToken}
     </div>
   );
 };

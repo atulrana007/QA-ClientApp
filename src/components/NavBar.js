@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { useLocation } from "react-router-dom";
 
 import {
   Collapse,
@@ -22,37 +20,37 @@ import {
 
 import { useAuth0 } from "@auth0/auth0-react";
 
-const NavBar = () => {
-  function useQuery() {
-    console.log("in the hook ", useLocation().search);
-    return new URLSearchParams(useLocation().search);
-  }
-
-  const Culture = () => {
-    let query = useQuery();
-    const parsedHash = new URLSearchParams(window.location.hash.substr(1));
-    let culture = query.get("culture") ?? parsedHash.get("culture");
-
-    return culture;
-  };
-  const [culture, setCulture] = useState(Culture() || "en-us");
-  console.log("-------->", setCulture);
-  const AffId = () => {
-    let query = useQuery();
-    const parsedHash = new URLSearchParams(window.location.hash.substr(1));
-    let culture = query.get("affid") ?? parsedHash.get("affid");
-    return culture;
-  };
-  const [affid, setAffId] = useState(AffId() || "0");
-  console.log(setAffId);
+const NavBar = (props) => {
+  const [logginOut, setStateLogout] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const {
+    user,
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+    getAccessTokenSilently,
+    getIdTokenClaims,
+  } = useAuth0();
   const toggle = () => setIsOpen(!isOpen);
 
-  const logoutWithRedirect = () =>
+  const getAccessToken = async () => {
+    if (isAuthenticated) {
+      const data = await getAccessTokenSilently({ detailedResponse: true });
+      const data2 = await getIdTokenClaims();
+      props.setResponse({ AccessToken: data, IdToken: data2?.__raw });
+    }
+  };
+  useEffect(() => {
+    getAccessToken();
+  }, []);
+
+  const logoutWithRedirect = () => {
+    setStateLogout(true);
+    props.setResponse({ AccessToken: "", IdToken: "" });
     logout({
       returnTo: window.location.origin,
     });
+  };
 
   return (
     <div className="nav-container">
@@ -94,6 +92,16 @@ const NavBar = () => {
                   </NavLink>
                 </NavItem>
               )}
+              <NavItem>
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/tokens-flow"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Token
+                </NavLink>
+              </NavItem>
             </Nav>
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
@@ -102,12 +110,11 @@ const NavBar = () => {
                     id="qsLoginBtn"
                     color="primary"
                     className="btn-margin"
-                    onClick={() =>
-                      loginWithRedirect({
-                        culture: culture,
-                        affid: affid,
-                        // affid: AffId(),
-                        // fragment: `culture=pl-pl&aff_id=105`,
+                    disabled={logginOut}
+                    style={{ background: logginOut ? "grey" : "" }}
+                    onClick={() => {
+                      return loginWithRedirect({
+                        fragment: `culture=en-us&aff_id=105`,
                         // &aai=${JSON.stringify(
                         //   {
                         //     ea: "value",
@@ -117,8 +124,8 @@ const NavBar = () => {
                         // appState: {
                         //   returnTo: "?culture=en-gb&aff_id=105",
                         // },
-                      })
-                    }
+                      });
+                    }}
                   >
                     Log in
                   </Button>
@@ -164,8 +171,7 @@ const NavBar = () => {
                     block
                     onClick={() =>
                       loginWithRedirect({
-                        culture: Culture(),
-                        affid: AffId(),
+                        fragment: "culture=en-us&aff_id=0",
                       })
                     }
                   >
@@ -205,7 +211,9 @@ const NavBar = () => {
                   <RouterNavLink
                     to="#"
                     id="qsLogoutBtn"
-                    onClick={() => logoutWithRedirect()}
+                    onClick={() => {
+                      return logoutWithRedirect();
+                    }}
                   >
                     Log out
                   </RouterNavLink>

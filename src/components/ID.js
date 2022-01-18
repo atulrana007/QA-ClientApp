@@ -1,33 +1,28 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 
 const OTP = (props) => {
-  const history = useHistory();
-  const { detailsState, setDetailsState } = props;
-  const getOTP = async (e) => {
-    e.preventDefault();
-    console.log("get-otp", detailsState);
-    history.push("/verify");
+  const { detailsState } = props;
+  const getOTP = () => {
+    console.log("e");
+    var base64Url = detailsState.idToken.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    const ans = JSON.parse(jsonPayload);
+
+    return ans;
   };
+  const parse = getOTP();
   return (
     <div>
-      <form style={{ display: "flex", flexDirection: "column" }}>
-        EMAIL:
-        <input
-          type="text"
-          value={props.email}
-          onChange={(e) => {
-            setDetailsState({ ...detailsState, email: e.target.value });
-          }}
-        ></input>
-        <button
-          style={{ with: "50%" }}
-          type="button"
-          onClick={(e) => getOTP(e)}
-        >
-          <p onClick={(e) => getOTP(e)}>start-otp-flow</p>
-        </button>
-      </form>
+      <b>Claims of ID token</b><br/>
+      Nickname : {parse.nickname}<br/>
+      Name : {parse.name}<br/>
+      Email  : {parse.email}<br/>
+      Is Email Verified : {parse.email_verified}<br/>
+      Picture : {parse.picture}<br/>
+
     </div>
   );
 };

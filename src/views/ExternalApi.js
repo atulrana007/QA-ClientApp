@@ -5,9 +5,9 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { getConfig } from "../config";
 import Loading from "../components/Loading";
 
-export const ExternalApiComponent = () => {
+export const ExternalApiComponent = (props) => {
   const { apiOrigin = "http://localhost:3001", audience } = getConfig();
-
+  const { detailsState, setDetailsState } = props;
   const [state, setState] = useState({
     showResult: false,
     apiMessage: "",
@@ -76,6 +76,22 @@ export const ExternalApiComponent = () => {
         ...state,
         error: error.error,
       });
+    }
+  };
+
+  const callMFAApi = async () => {
+    try {
+      console.log(detailsState);
+      console.log('D');
+      const token = await getAccessTokenSilently(
+        {
+          subrefid: detailsState.param2,
+          ignoreCache: true
+        }
+      );
+      console.log(token);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -171,13 +187,29 @@ export const ExternalApiComponent = () => {
           </Alert>
         )}
 
-        <Button
+        {/* <Button
           color="primary"
           className="mt-5"
           onClick={callApi}
           disabled={!audience}
         >
           Ping API
+        </Button> */}
+        Custom parameter:
+        <input
+          type="text"
+          onChange={(e) => {
+            setDetailsState({ ...detailsState, param2: e.target.value });
+          }}
+        ></input>
+        <br/>
+        <Button
+          color="primary"
+          className="mt-5"
+          onClick={callMFAApi}
+          disabled={!audience}
+        >
+          Refresh token call
         </Button>
       </div>
 
