@@ -42,6 +42,7 @@ const NavBar = (props) => {
   };
   useEffect(() => {
     getAccessToken();
+    // eslint-disable-next-line
   }, []);
 
   const logoutWithRedirect = () => {
