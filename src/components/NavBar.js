@@ -19,10 +19,43 @@ import {
 } from "reactstrap";
 
 import { useAuth0 } from "@auth0/auth0-react";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 
 const NavBar = (props) => {
   const [logginOut, setStateLogout] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  function useQuery() {
+    console.log("in the hook ", useLocation().search);
+
+    return new URLSearchParams(useLocation().search);
+  }
+
+  const Culture = () => {
+    let query = useQuery();
+
+    const parsedHash = new URLSearchParams(window.location.hash.substr(1));
+
+    let culture = query.get("culture") ?? parsedHash.get("culture");
+
+    return culture;
+  };
+
+  const [culture, setCulture] = useState(Culture() || "en-us");
+
+  console.log("-------->", setCulture);
+
+  const AffId = () => {
+    let query = useQuery();
+
+    const parsedHash = new URLSearchParams(window.location.hash.substr(1));
+
+    let culture = query.get("affid") ?? parsedHash.get("affid");
+
+    return culture;
+  };
+
+  const [affid, setAffId] = useState(AffId() || "0");
+  console.log(setAffId);
   const {
     user,
     isAuthenticated,
@@ -115,7 +148,8 @@ const NavBar = (props) => {
                     style={{ background: logginOut ? "grey" : "" }}
                     onClick={() => {
                       return loginWithRedirect({
-                        fragment: `culture=en-us&aff_id=105`,
+                        culture: culture,
+                        affid: affid,
                         // &aai=${JSON.stringify(
                         //   {
                         //     ea: "value",
