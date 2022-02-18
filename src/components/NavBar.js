@@ -53,6 +53,18 @@ const NavBar = (props) => {
 
     return culture;
   };
+  const AAIParams = () => {
+    let query = useQuery();
+
+    const parsedHash = new URLSearchParams(window.location.hash.substr(1));
+
+    let culture = query.get("aai") || parsedHash.get("aai") || "";
+
+    return culture;
+  };
+  const [login_hint, seetLoginHint] = useState(AAIParams());
+
+  console.log(seetLoginHint);
 
   const [affid, setAffId] = useState(AffId() || "0");
   console.log(setAffId);
@@ -150,6 +162,7 @@ const NavBar = (props) => {
                       return loginWithRedirect({
                         culture: culture,
                         affid: affid,
+                        aai: login_hint,
                         // &aai=${JSON.stringify(
                         //   {
                         //     ea: "value",
