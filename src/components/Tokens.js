@@ -8,13 +8,16 @@ const Tokens = (props) => {
   const getParse = (e) => {
     if (e.target.id === "access") {
       history.push("/parseAccessToken");
-    } else if (e.target.id === "id") {
-      history.push("/parseIDToken");
-    } else if(e.target.id === "refresh") {
-      history.push("/parseRefreshToken");
+    } else if (e.target.id === "Access") {
+      history.push("/Access");
     }
   };
 
+  const getOTP = async (e) => {
+    e.preventDefault();
+    console.log("get-otp", detailsState);
+    history.push("/verify");
+  };
   return (
     <div>
       <form style={{ display: "flex", flexDirection: "column" }}>
@@ -26,7 +29,6 @@ const Tokens = (props) => {
             setDetailsState({ ...detailsState, accessToken: e.target.value });
           }}
         ></input>
-        <br/>
         <button
           style={{ with: "50%" }}
           type="button"
@@ -43,7 +45,6 @@ const Tokens = (props) => {
             setDetailsState({ ...detailsState, idToken: e.target.value });
           }}
         ></input>
-        <br/>
         <button
           style={{ with: "50%" }}
           type="button"
@@ -60,21 +61,12 @@ const Tokens = (props) => {
             setDetailsState({ ...detailsState, refreshToken: e.target.value });
           }}
         ></input>
-        <br/>
-        Custom Parameter(pass the parameter to be punched in the access token):
-        <input
-          type="text"
-          onChange={(e) => {
-            setDetailsState({ ...detailsState, param1: e.target.value });
-          }}
-        ></input>
-        <br/>
-        <button id="refresh"
+        <button
           style={{ with: "50%" }}
           type="button"
-          onClick={(e) => getParse(e)}
+          onClick={(e) => getOTP(e)}
         >
-          Get New Access token
+          Some change
         </button>
       </form>
     </div>
