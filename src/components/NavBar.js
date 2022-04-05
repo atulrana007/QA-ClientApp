@@ -85,6 +85,10 @@ const NavBar = () => {
       returnTo: window.location.origin,
     });
 
+  const [culture, setCulture] = useState(Culture());
+  const [affid, setaffid] = useState(Culture());
+  console.log(setCulture, setaffid);
+
   return (
     <div className="nav-container">
       <Navbar color="light" light expand="md">
@@ -135,6 +139,8 @@ const NavBar = () => {
                     className="btn-margin"
                     onClick={() =>
                       loginWithRedirect({
+                        culture: culture,
+                        affid: affid,
                         ...finalState,
                         aai: JSON.stringify(finalState.aai),
                         // affid: AffId(),
