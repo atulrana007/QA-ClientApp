@@ -11,3 +11,10 @@ code {
   font-family: 'Poppins',sans-serif,
     monospace;
 }
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Poppins'),url('https://cdn.jsdelivr.net/gh/atulrana007/latest-auth0-code/dist/Poppins-Bold.ttf') format('truetype'); 
+}
