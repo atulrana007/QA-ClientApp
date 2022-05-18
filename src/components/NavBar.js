@@ -48,6 +48,10 @@ const NavBar = () => {
     setFinalState({
       culture: currentValue?.culture || Culture() || "",
       affid: currentValue?.affid || AffId() || 0,
+      enableBack: currentValue?.enableBack,
+      enableSkip: currentValue?.enableSkip,
+      hideHeader: currentValue?.hideHeader,
+      hideFooter: currentValue?.hideFooter,
       ui_locales: currentValue?.ui_locales,
       aai: {
         ea: currentValue?.ea || "",
